@@ -1,0 +1,14 @@
+= Sol Rally =
+Browser Kart Racing
+- Version $STKVERSION$
+- Runs entirely in the browser, no install
+
+= Sol Rally Team =
+Design, engineering and gameplay
+- Race modes: Race, Sprint and a head-to-head duel
+- Full game loop: kart select, track select, race, results
+
+= Powered By =
+Arkiv and Emscripten and WebAssembly
+- Arkiv for tamper-resistant race records and leaderboards
+- Emscripten and WebAssembly for browser play

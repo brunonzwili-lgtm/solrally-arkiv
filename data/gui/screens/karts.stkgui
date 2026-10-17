@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stkgui>
+    <div x="1%" y="1%" width="98%" height="99%" layout="vertical-row" >
+        <header width="80%" height="8%"
+               I18N="In the kart selection (player setup) screen"
+               text="Choose a Kart"
+               align="center" text_align="center" />
+        <spacer height="1%" width="25"/>
+
+        <placeholder id="playerskarts" width="100%" align="center" proportion="1">
+            <!-- Contents is added programatically -->
+        </placeholder>
+
+        <spacer height="1f"/>
+        <div width="100%" height="32%" layout="vertical-row" >
+            <box proportion="2" width="100%" layout="vertical-row" padding="2">
+                <spacer height="5%"/>
+                <spacer height="3%"/>
+                <div width="100%" proportion="1" layout="horizontal-row" align="center">
+                    <ribbon_grid id="karts" square_items="true" width="100%" height="100%" align="center"
+                            child_width="110" child_height="110"/>
+                    <spacer width="3%"/>
+                    <icon-button id="continue" y="10%" icon="gui/icons/green_check.png" text="Continue"/>
+                </div>
+            </box>
+            <!-- Groups will be added dynamically at runtime.
+                 Kept in the tree (code hides it for single-group rosters),
+                 so keep the id but use minimal height. -->
+            <tabs width="98%" x="1%" height="1" id="kartgroups">
+            </tabs>
+        </div>
+    </div>
+
+    <icon-button id="back" x="1%" y="0" height="9%" icon="gui/icons/back.png"/>
+</stkgui>

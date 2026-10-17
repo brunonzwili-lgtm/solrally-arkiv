@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stkgui>
+    <div x="1%" y="1%" width="98%" height="98%" layout="vertical-row" >
+        <header align="center" height="8%" width="80%" text="Player Account" text_align="center"/>
+        <spacer height="1%" width="10"/>
+
+        <!-- Plain buttons, not a <tabs> ribbon. Which id arrives in
+             eventCallback depends on the propagation route the input took,
+             and a ribbon's selection is not reliably observable from here.
+             A button's own name always is. -->
+        <div width="40%" height="fit" layout="horizontal-row" align="center">
+            <button id="tab_login" width="fit" text="Log In"/>
+            <spacer width="2%"/>
+            <button id="tab_register" width="fit" text="Register"/>
+        </div>
+
+        <spacer height="1%" width="10"/>
+
+        <box proportion="1" width="92%" align="center" layout="vertical-row">
+
+            <!-- The account screen drives a single local profile, but the
+                 ribbon is still what identifies it to the rest of the code
+                 (selectUser, delete, rename all read the selection), so it
+                 stays in the layout. -->
+            <scrollable_ribbon id="players" height="14%" y="10" x="10" width="98%"
+                               align="center" label_location="each"
+                               square_items="true" child_width="128" child_height="128"/>
+
+            <spacer height="2%" width="10"/>
+
+            <!-- proportion="1", NOT height="fit": a fit-height parent holding
+                 fit-height rows has no definite height to resolve against, so
+                 every row and its textbox collapsed to zero. -->
+            <div width="90%" align="center" layout="vertical-row" proportion="1">
+
+                <div width="100%" height="fit" layout="horizontal-row">
+                    <label id="label_username" width="32%" height="100%" text_align="left" text="Nickname"/>
+                    <textbox id="username" proportion="2" height="fit"/>
+                </div>
+
+                <spacer height="4%" width="20"/>
+
+                <label id="wallet_hint" width="100%" height="fit" text_align="center" word_wrap="true" text="Connect your wallet to continue."/>
+
+                <spacer height="6%" width="20"/>
+
+                <div width="100%" height="fit" layout="horizontal-row" align="center">
+                    <spacer proportion="1"/>
+                    <button id="connect_wallet" width="fit" text="Connect Wallet"/>
+                    <spacer proportion="1"/>
+                </div>
+
+                <spacer height="2%" width="20"/>
+
+                <label id="wallet_info" width="100%" height="fit" text_align="center"/>
+
+                <spacer height="3%" width="20"/>
+
+                <label id="mode_hint" width="100%" height="fit" text_align="center" word_wrap="true"/>
+
+                <spacer height="3%" width="20"/>
+
+                <label id="message" width="100%" height="fit" text_align="center" word_wrap="true"/>
+
+                <spacer height="3%" width="20"/>
+
+                <button id="sign_out" width="fit" align="center" text="Sign out"/>
+
+            </div>
+
+            <spacer height="2%" width="20"/>
+
+            <!-- label_location="bottom" puts the caption under the icon, so
+                 the band needs icon height plus label height. -->
+            <div width="90%" align="center" layout="vertical-row" height="22%">
+                <buttonbar id="options" width="100%" height="100%" align="center">
+                    <icon-button id="cancel" width="88" height="88" icon="gui/icons/back.png"
+                                 text="Cancel" label_location="bottom"/>
+                    <icon-button id="ok" width="88" height="88" icon="gui/icons/green_check.png"
+                                 text="OK" label_location="bottom"/>
+                </buttonbar>
+            </div>
+        </box>
+        <spacer width="20" height="4%"/>
+    </div>
+</stkgui>

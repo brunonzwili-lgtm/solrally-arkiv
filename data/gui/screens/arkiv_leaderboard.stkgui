@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stkgui>
+    <div x="1%" y="0" width="98%" layout="horizontal-row" height="9%">
+        <icon-button id="back" height="100%" icon_align="left" icon="gui/icons/back.png"/>
+        <spacer proportion="1" height="1"/>
+    </div>
+
+    <div x="0%" y="1%" width="100%" height="98%" layout="vertical-row" >
+        <header width="90%" height="8%" align="center" text_align="center" text="Onchain Leaderboard"/>
+        <spacer width="100%" height="1%"/>
+
+        <!-- Filled from Arkiv entities at runtime -->
+        <box proportion="1" width="92%" align="center" layout="vertical-row" padding="6">
+            <list id="arkiv_list" x="0" y="0" width="100%" height="100%" alternate_bg="true"/>
+        </box>
+
+        <spacer width="100%" height="1%"/>
+
+        <div width="100%" height="fit" layout="horizontal-row" align="center">
+            <spacer proportion="1"/>
+            <button id="connect" width="fit" text="Connect Wallet"/>
+            <spacer width="3%"/>
+            <button id="submit" width="fit" text="Submit My Lap"/>
+            <spacer proportion="1"/>
+        </div>
+
+        <spacer width="100%" height="1%"/>
+        <label id="status" width="100%" height="fit" text_align="center"/>
+        <spacer width="100%" height="2%"/>
+    </div>
+</stkgui>

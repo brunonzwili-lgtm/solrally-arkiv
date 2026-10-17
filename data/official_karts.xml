@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<karts>
+    <kart name="beastie" type="heavy" width="0.837" height="0.847" length="1.49" gravity-shift="0 0.4235 0"/>
+    <kart name="emule" type="medium" width="0.625" height="0.735" length="1.146" gravity-shift="0 0.3438 0"/>
+    <kart name="kiki" type="light" width="0.866" height="0.974" length="1.227" gravity-shift="0 0.3681 0"/>
+    <kart name="tux" type="medium" width="0.821" height="0.675" length="1.437" gravity-shift="0 0.3375 0"/>
+</karts>
