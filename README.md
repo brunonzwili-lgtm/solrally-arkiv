@@ -83,10 +83,9 @@ operator. That integration is the current work.
 | Chunked asset download with progress reporting | Working |
 | IndexedDB asset + save caching | Working |
 | Landing page and deployment pipeline | Working |
-| Arkiv leaderboard (write result / query top times) | **In progress** — see [Arkiv Integration](#arkiv-integration) |
-| Browser wallet connection | **Not implemented** |
-| Arkiv program called from the frontend | **Not implemented** |
-| Leaderboard entities written to Arkiv | **In progress** |
+| Arkiv leaderboard (write result / query top times) | **Working** — see [Arkiv Integration](#arkiv-integration) |
+| Browser wallet connection (MetaMask → Tiramisu) | **Working** |
+| Arkiv entities written from the frontend | **Working** — accounts + race results |
 | Arkiv-themed karts and tracks | **Not implemented** — see [Current Status](#current-status) |
 
 ---
@@ -760,11 +759,10 @@ binary is confusing at best.
 
 ### Frontend
 
-**No wallet connection means no transaction handling in the browser today.** There is no
-key material, no signature request, and no RPC call in `wasm/web/`. When wallet
-integration lands, the standard constraints apply: never handle a private key in page
-code, always let the wallet own signing, and verify the program ID client-side before
-signing any transaction.
+**Wallet connection is implemented.** MetaMask connects to the Tiramisu testnet
+and signs Arkiv writes. No private key material is handled in page code — the wallet
+owns signing. The Arkiv SDK uses viem with `custom(window.ethereum)`, as Arkiv's
+own browser guide describes.
 
 **Runtime error disclosure.** The error hooks render the last 10 lines of WASM stderr
 into the page. This is deliberate and useful for debugging, but it will surface internal
@@ -1148,12 +1146,11 @@ sol-rally-v3/
 
 | Feature | State |
 | --- | --- |
-| Wallet connection | Absent. No `@arkiv/*` dependency in `wasm/web/` |
-| Program called from the game | Absent. No IDL client |
+| Wallet connection | **Working.** MetaMask → Tiramisu testnet, signs Arkiv writes |
+| Arkiv leaderboard | **Working.** Reads + writes race results and accounts |
 | Arkiv-themed karts | Absent. Landing page shows static PNGs; game ships `tux`, `beastie`, `emule`, `kiki` |
 | Arkiv-themed tracks | Absent. Game ships the stock Sol Rally set |
 | Mainnet Race / Slot Sprint / MEV Battle modes | Absent |
-| On-chain leaderboards | Absent |
 | Multiplayer | Absent. `ws_enabled` is `false` |
 
 ### Code health
