@@ -4,7 +4,7 @@
 
 [Play Sol Rally](https://solrally.vercel.app/)
 
-Sol Rally is a browser-based 3D kart racing game compiled to WebAssembly with
+Sol Rally is a 3D open source kart racing game compiled to WebAssembly with
 [Emscripten](https://emscripten.org/), paired with [Arkiv](https://arkiv.network/), a
 Web3 database, for tamper-resistant race records and a leaderboard anyone can read.
 
@@ -48,7 +48,7 @@ is the authoritative summary of what works.
 
 ## Overview
 
-Sol Rally is a 3D kart racing game written in C++ and built on the Irrlicht engine.
+Sol Rally is a 3D open source kart racing game written in C++ and built on the Irrlicht engine.
 Shipping a game of this scope to a browser requires solving two hard problems, and
 Sol Rally's architecture is entirely shaped by them.
 
