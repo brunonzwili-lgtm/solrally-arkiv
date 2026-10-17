@@ -1,0 +1,348 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Sol Rally</title>
+<link rel="icon" type="image/png" href="/solrally_64.png">
+<script src="/game/supertuxkart.js"></script>
+    <script type="module">import("/arkiv.js").catch(function () {});</script>
+    <script>
+      //emscripten only tells us if the runtime is ready once it starts main
+      //so cancel running main the first time around so we can store when it is ready
+      globalThis.ready = false;
+      var real_run = run;
+      run = () => {
+        if (globalThis.ready) {
+          real_run();
+        }
+        globalThis.ready = true;
+      }
+    </script>
+    <script src="script.js" type="module" defer></script>
+
+    <style>
+      :root {
+        --orange: #ff7a1a;
+        --black: #0b0b0b;
+        --panel: #0e0e0e;
+        --surface: #1a1a1a;
+        --line: #2a2a2a;
+        --text: #f5f5f5;
+        --muted: #bdbdbd;
+      }
+      * {
+        font-family: Arial, sans-serif;
+        box-sizing: border-box;
+      }
+      html, body {
+        margin: 0px;
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        background-color: var(--black);
+        background-image:
+          linear-gradient(45deg, var(--orange) 25%, transparent 25%, transparent 75%, var(--orange) 75%),
+          linear-gradient(45deg, var(--orange) 25%, transparent 25%, transparent 75%, var(--orange) 75%);
+        background-size: 64px 64px;
+        background-position: 0 0, 32px 32px;
+        color: var(--text);
+      }
+      p, label, select {
+        font-size: 12px;
+        margin: 4px;
+      }
+      #canvas {
+        background-color: transparent;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
+      }
+      #info_container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(1060px, 94vw);
+        max-height: 94vh;
+        overflow-y: auto;
+        z-index: 2;
+        background-color: var(--panel);
+        color: var(--text);
+        border: 2px solid var(--orange);
+        border-radius: 16px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
+      }
+      #header_bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+      #brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      #brand img {
+        width: 64px;
+        height: 64px;
+      }
+      #brand h1 {
+        margin: 0px;
+        font-size: 24px;
+        font-style: italic;
+        font-weight: 900;
+        letter-spacing: 1px;
+        color: #ffffff;
+      }
+      #brand h1 span {
+        color: var(--orange);
+      }
+      #net_pill {
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 1.5px;
+        color: var(--orange);
+        border: 1px solid var(--orange);
+        border-radius: 999px;
+        padding: 6px 14px;
+        white-space: nowrap;
+      }
+      #hero {
+        display: flex;
+        gap: 0;
+        align-items: stretch;
+      }
+      #hero_copy {
+        flex: 1 1 55%;
+        padding: 22px 26px;
+      }
+      #hero_copy h2 {
+        margin: 0 0 6px 0;
+        font-size: 44px;
+        line-height: 1;
+        font-style: italic;
+        font-weight: 900;
+        letter-spacing: 1px;
+      }
+      #hero_copy h2 span {
+        color: var(--orange);
+      }
+      #tagline {
+        margin: 0 0 14px 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      #tagline strong {
+        color: #ffffff;
+      }
+      #stripe {
+        height: 4px;
+        width: 120px;
+        margin: 0 0 14px 0;
+        background: repeating-linear-gradient(-55deg, var(--orange) 0 12px, transparent 12px 20px);
+      }
+      #features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0 0 6px 0;
+      }
+      .feat {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        background-color: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--orange);
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+      .feat .ic {
+        font-size: 20px;
+        line-height: 1;
+      }
+      .feat b {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 2px;
+      }
+      .feat small {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .soon {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: var(--black);
+        background-color: var(--orange);
+        border-radius: 4px;
+        padding: 1px 6px;
+        margin-left: 6px;
+        vertical-align: 1px;
+      }
+      #karts_row {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin: 12px 0 4px 0;
+      }
+      .kart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+      .kart img {
+        width: 52px;
+        height: 52px;
+        border-radius: 10px;
+        border: 2px solid var(--line);
+        background-color: var(--surface);
+      }
+      .kart small {
+        font-size: 10px;
+        color: var(--muted);
+      }
+      #hero_art {
+        flex: 1 1 45%;
+        min-height: 320px;
+        background-color: var(--surface);
+        border-left: 4px solid var(--orange);
+        clip-path: polygon(36px 0, 100% 0, 100% 100%, 0 100%, 0 36px);
+        overflow: hidden;
+      }
+      #hero_art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 16px 26px 20px 26px;
+        border-top: 1px solid var(--line);
+      }
+      #quality_wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #quality_wrap label {
+        color: var(--muted);
+      }
+      #quality_select {
+        background-color: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--orange);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      #status_bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1 1 auto;
+      }
+      #start_button {
+        border: none;
+        outline: none;
+        padding: 12px 26px;
+        border-radius: 10px;
+        background-color: var(--orange);
+        color: var(--black);
+        font-weight: 900;
+        font-style: italic;
+        font-size: 16px;
+        letter-spacing: 1px;
+        cursor: pointer;
+      }
+      #start_button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      #status_text {
+        color: var(--muted);
+      }
+      @media (max-width: 760px) {
+        #hero {
+          flex-direction: column;
+        }
+        #hero_art {
+          min-height: 180px;
+          border-left: none;
+          border-top: 4px solid var(--orange);
+          clip-path: none;
+        }
+        #hero_copy h2 {
+          font-size: 32px;
+        }
+        #features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="canvas"></canvas>
+    <div id="info_container">
+      <div id="header_bar">
+        <div id="brand">
+          <img src="/solrally_64.png">
+          <h1>SOL <span>RALLY</span></h1>
+        </div>
+        <div id="net_pill">ARKIV &#215; TIRAMISU</div>
+      </div>
+      <div id="hero">
+        <div id="hero_copy">
+          <h2>SOL <span>RALLY</span></h2>
+          <p id="tagline">A kart racing game with tamper-resistant <strong>race records</strong> and a <strong>censorship-resistant leaderboard</strong> stored on <strong>Arkiv</strong>.</p>
+          <div id="stripe"></div>
+          <div id="features">
+            <div class="feat"><div class="ic">&#127937;</div><div><b>4 Karts</b><small>Pick your machine before you race.</small></div></div>
+            <div class="feat"><div class="ic">&#128506;</div><div><b>5 Tracks</b><small>Sol Dunes, Orca Lagoon, Marinade Trench, Pyth Peak, Tensor Town.</small></div></div>
+            <div class="feat"><div class="ic">&#127918;</div><div><b>3 Modes</b><small>Race, Sprint and a head-to-head duel.</small></div></div>
+            <div class="feat"><div class="ic">&#127942;</div><div><b>Onchain Leaderboard</b><small>Every result written to Arkiv, readable by anyone.</small></div></div>
+          </div>
+          <div id="karts_row">
+            <div class="kart"><img src="/images/karts/validator.png"><small>Racer</small></div>
+            <div class="kart"><img src="/images/karts/bonk.png"><small>Comet</small></div>
+            <div class="kart"><img src="/images/karts/jupiter.png"><small>Vortex</small></div>
+            <div class="kart"><img src="/images/karts/sol.png"><small>Scout</small></div>
+          </div>
+        </div>
+        <div id="hero_art">
+          <img src="/images/tracks/hero.jpg">
+        </div>
+      </div>
+      <div id="controls">
+        <div id="quality_wrap">
+          <label for="quality_select">Texture quality:</label>
+          <select name="quality_select" id="quality_select" style="margin: 0px;">
+            <option value="low">Low (120MiB)</option>
+            <option value="mid">Medium (171MiB)</option>
+            <option value="high">High (249MiB)</option>
+          </select>
+        </div>
+        <div id="status_bar">
+          <button id="start_button" disabled>&#9654; START GAME</button>
+          <p id="status_text">Loading game code...</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
