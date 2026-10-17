@@ -4,6 +4,23 @@ Every record Sol Rally writes is one Arkiv **entity**. Arkiv stores entities in 
 shared database, so every entity we create is tagged with `project = "solrally"` —
 without that tag our reads would return other builders' data.
 
+## TL;DR
+
+Sol Rally stores two kinds of records in Arkiv:
+
+- **Accounts** (nickname + wallet) — one per player, lasts 3650 days.
+- **Race results** (track, kart, lap time, player) — one per submitted lap, expires after 90 days.
+
+Nothing else goes to Arkiv. No passwords, no keys, no game assets, no progress.
+
+**Why Arkiv?** Public reads (no gas), typed queries, built-in expiry, wallet identity,
+no backend to host. Without it, we'd need a server, auth system, and trust model.
+
+**What would break without Arkiv?** The leaderboard would need a hosted backend,
+race records could be tampered with, and there'd be no public audit trail.
+
+---
+
 ## Entity: `race_result`
 
 Written by `submitRaceResult()` in `arkiv/browser.js`.

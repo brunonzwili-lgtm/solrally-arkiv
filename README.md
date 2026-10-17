@@ -619,7 +619,7 @@ fresh MetaMask will not have Tiramisu configured.
 
 ### What stays off Arkiv
 
-- No private keys, no personal data, not even hashed. A racer is a wallet
+- No private keys, no passwords, no personal data. A racer is a wallet
   address and a lap time.
 - No game assets. Hundreds of megabytes of track and kart data would cost write
   gas for data nothing needs to verify.
@@ -628,6 +628,74 @@ fresh MetaMask will not have Tiramisu configured.
 
 Full details in [`arkiv/schema.md`](arkiv/schema.md); build notes in
 [`arkiv/friction.md`](arkiv/friction.md).
+
+### What stays in Arkiv (entity + attributes)
+
+Two entity types, both namespaced under `project = "solrally"`:
+
+**`account`** — one per registered player. Written once at registration.
+
+| Field | Where | What it is |
+| --- | --- | --- |
+| `nickname` | attribute + payload | Display name and login identity |
+| `wallet` | attribute + payload | The player's wallet address (lowercased for comparison) |
+| TTL | — | 3650 days (identity, should not expire) |
+
+**`race_result`** — one per submitted lap. Written when the player submits.
+
+| Field | Where | What it is |
+| --- | --- | --- |
+| `track` | attribute + payload | Track display name |
+| `kart` | attribute + payload | Kart identifier |
+| `position` | attribute | Race finishing position |
+| `lapTimeMs` | attribute + payload | Best lap time in milliseconds |
+| `player` | attribute + payload | Wallet address of the racer |
+| `nickname` | attribute + payload | Display name at time of race |
+| `mode` | payload only | Race mode (e.g. "Race") |
+| `finishedAt` | payload only | ISO timestamp |
+| TTL | — | 90 days (race records, not identity) |
+
+Everything else — profiles, high scores, story progress, unlocked tracks,
+settings, karts — lives in the browser's local storage (`players.xml` via
+IDBFS). Nothing else leaves the device.
+
+### Why we chose Arkiv
+
+1. **Public reads, no gas.** Anyone can query race results without a wallet
+   or paying gas. This makes the leaderboard truly open and judge-friendly.
+2. **Typed, queryable attributes.** We can filter by `project`, `type`,
+   `track`, `player`, `nickname` server-side instead of reading every entity
+   and filtering in the browser.
+3. **Entity lifetimes.** Accounts live 3650 days, race records expire at 90
+   days. This is built into the store, not application logic.
+4. **No contract deployment.** No Solidity, no deployment step, no ABI to
+   maintain. Write an entity, read it back. The whole integration is ~200 lines
+   of JS.
+5. **Shared database.** All builders use the same Arkiv instance, so
+   `project = "solrally"` is our namespace. This is what makes cross-project
+   queries possible in principle.
+
+### What would break without Arkiv
+
+If we had used a conventional database (Supabase, Firebase, a REST API):
+
+- **The leaderboard would need a backend.** Someone has to host and pay for it.
+  Arkiv's reads are free and public — no server, no auth, no uptime to maintain.
+- **Race records could be tampered with.** A conventional DB is mutable by its
+  owner. Arkiv entities are signed by the racer's wallet; nobody can edit
+  someone else's lap time without their private key.
+- **No wallet identity.** Without Arkiv, we'd need our own auth system (email,
+  password, OAuth). Arkiv gives us wallet-based identity for free — the wallet
+  address IS the identity, and signing a write proves ownership.
+- **No public audit trail.** Judges (and anyone) can independently query
+  Arkiv and verify that race records exist, who created them, and when. A
+  private database can't offer that.
+- **Lifetime management becomes application logic.** Expiring old race records
+  would require cron jobs or TTL columns. Arkiv handles it natively.
+
+In short: without Arkiv, Sol Rally would need a backend server, an auth system,
+and a trust model. With Arkiv, the game is a static site that talks to a
+public database.
 
 ---
 

@@ -1,5 +1,11 @@
 # Friction report
 
+> Plain-language summary: these are the problems we hit building on Arkiv and how
+> we worked around them. Each one is reproducible on Tiramisu testnet with
+> `@arkiv-network/sdk` 0.8.1. See the sections below for details.
+
+# Friction report
+
 Specific, reproducible things that cost us time building on Arkiv. All reproduced
 against Tiramisu testnet with `@arkiv-network/sdk` 0.8.1 / viem 2.57.7.
 
