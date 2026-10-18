@@ -113,6 +113,79 @@ per-tick writes cannot budget without instrumenting balances itself.
 
 ---
 
+## 6. Thread pool exhaustion from async WASM operations
+
+The game runs on Emscripten pthreads. When the Arkiv module loaded
+asynchronously via `import('/arkiv.js')`, its internal WASM operations
+(`brotli-wasm`) tried to spawn threads and hit the default pool limit of 4,
+causing a deadlock. The console reported "Tried to spawn a new thread, but the
+thread pool is exhausted."
+
+**How we overcame it:** set `-sPTHREAD_POOL_SIZE=16` in the linker flags.
+This gives enough headroom for the game's audio/rendering threads plus the
+Arkiv module's internal threads.
+
+---
+
+## 7. Widget precondition violations
+
+STK's `ListWidget::clearColumns()` and `addColumn()` require the widget to be
+added to the screen first. We called them in `loadedFromFile()`, which runs
+before `add()`. This caused a "memory access out of bounds" crash when opening
+the leaderboard.
+
+**How we overcame it:** move the calls to `beforeAddingWidget()`, which runs
+after `add()` but before `init()`.
+
+---
+
+## 8. Layout collapse to zero height
+
+A `height="fit"` parent holding `height="fit"` rows had no definite height to
+resolve against, so every row and textbox collapsed to zero width. The
+`LayoutManager` logged "Statically sized widgets took all the place!!"
+
+**How we overcame it:** change the form container to `proportion="1"` (taking
+leftover space in the parent) while keeping rows at `height="fit"` (sizing to
+their font). This is the stock STK pattern.
+
+---
+
+## 9. Unreliable ribbon event routing
+
+The tab strip was a `<tabs>` ribbon (RibbonWidget with RIBBON_TABS type). The
+event name arriving in `eventCallback` depended on the input propagation path
+(mouse vs keyboard), so the Login/Register toggle was unreliable.
+
+**How we overcame it:** replace the ribbon with plain `<button>` widgets whose
+own names always arrive in `eventCallback` regardless of input method.
+
+---
+
+## 10. Stale data in the asset packer
+
+The asset packer (`pack_assets.sh`) skips repacking if a manifest already
+exists, so stkgui edits were not reflected in the tarball served to the
+browser. The game loaded the old layout and the fix appeared not to work.
+
+**How we overcame it:** delete the manifests and cached `data_low/` directories
+before repacking. The packer then regenerates from the updated source files.
+
+---
+
+## 11. Cross-origin isolation requirements
+
+Emscripten pthreads require COOP (`same-origin`) and COEP (`require-corp`)
+headers. Any missing header breaks `SharedArrayBuffer` and the game fails to
+start. This also constrains which CDNs can be used (they must serve
+`Cross-Origin-Resource-Policy: cross-origin`).
+
+**How we overcame it:** set both headers in `run_server.py` (local dev) and
+`vercel.json` (production). Verified by checking `crossOriginIsolated` in the
+browser console.
+
+---
+
 ## What went well
 
 Worth saying, because it is the reason this integration is small:
