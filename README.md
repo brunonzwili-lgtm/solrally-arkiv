@@ -27,6 +27,7 @@ is the authoritative summary of what works.
 - [System Architecture](#system-architecture)
 - [How It Works](#how-it-works)
 - [Arkiv Integration](#arkiv-integration)
+- [Challenges and how we overcame them](#challenges-and-how-we-overcame-them)
 - [Security Considerations](#security-considerations)
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
@@ -699,6 +700,63 @@ public database.
 ---
 
 
+
+## Challenges and how we overcame them
+
+### 1. No query for "all entities"
+
+Arkiv's `select()` with no `where()` throws `InvalidPredicateError` — the SDK has no
+spelling for "match everything." The error only surfaces at `fetch()` time, not at
+build time, so it reads like a network fault. **Fix:** namespace every entity with
+`project = "solrally"` from the first write and filter on it forever. If we had not
+planned that attribute up front, the entities would be unrecoverable.
+
+### 2. SDK needs a bundler, docs only cover Vite
+
+Arkiv's SDK loads a WASM dependency internally (`brotli-wasm`). The MetaMask guide
+assumes Vite. Our game has no bundler. **Fix:** bundle `browser.js` with esbuild
+into a single 716 KB ES module (`wasm/web/arkiv.js`) served as a static file and
+imported at runtime via `import('/arkiv.js')`. This removed the CDN dependency.
+
+### 3. Thread pool exhaustion
+
+The game runs on Emscripten pthreads. When the Arkiv module loaded asynchronously,
+its internal WASM operations tried to spawn threads and hit the default pool limit
+of 4, causing a deadlock. **Fix:** set `-sPTHREAD_POOL_SIZE=16` in the linker flags.
+
+### 4. List widget called before `add()`
+
+STK's `ListWidget::clearColumns()` and `addColumn()` require the widget to be added
+to the screen first. We called them in `loadedFromFile()`, which runs before `add()`,
+causing "memory access out of bounds." **Fix:** move the calls to
+`beforeAddingWidget()`.
+
+### 5. Layout collapse to zero height
+
+A `height="fit"` parent holding `height="fit"` rows had no definite height to resolve
+against, so every row and textbox collapsed to zero. **Fix:** change the form
+container to `proportion="1"` (taking leftover space) while keeping rows at
+`height="fit"` (sizing to font).
+
+### 6. Unreliable ribbon event routing
+
+The tab strip was a `<tabs>` ribbon, but the event name arriving in `eventCallback`
+depended on the input propagation path (mouse vs keyboard). **Fix:** replace the
+ribbon with plain `<button>` widgets whose own names always arrive.
+
+### 7. Stale data in pack_assets
+
+The asset packer skips repacking if a manifest already exists, so stkgui edits were
+not reflected in the tarball. **Fix:** delete manifests and cached `data_low/`
+directories before repacking.
+
+### 8. Cross-origin isolation
+
+Emscripten pthreads require COOP/COEP headers. Any missing header breaks
+`SharedArrayBuffer` and the game fails to start. **Fix:** set headers in both
+`run_server.py` and `vercel.json`.
+
+---
 
 ## Security Considerations
 
