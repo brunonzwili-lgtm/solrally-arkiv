@@ -33,6 +33,7 @@ private:
 public:
     ArkivLeaderboard();
     virtual void loadedFromFile() OVERRIDE;
+    virtual void beforeAddingWidget() OVERRIDE;
     virtual void init() OVERRIDE;
     virtual void onUpdate(float dt) OVERRIDE;
     virtual void eventCallback(GUIEngine::Widget* widget,

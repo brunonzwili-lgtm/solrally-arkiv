@@ -26,13 +26,18 @@ void ArkivLeaderboard::loadedFromFile()
 {
     m_list = getWidget<GUIEngine::ListWidget>("arkiv_list");
     m_status = getWidget<GUIEngine::LabelWidget>("status");
+}   // loadedFromFile
 
+// ---------------------------------------------------------------------------
+void ArkivLeaderboard::beforeAddingWidget()
+{
+    // Columns must be set up after the widget is added to the screen.
     if (m_list != NULL)
     {
         m_list->clearColumns();
         m_list->addColumn(_("Race records on Arkiv"), 1);
     }
-}   // loadedFromFile
+}   // beforeAddingWidget
 
 // ---------------------------------------------------------------------------
 void ArkivLeaderboard::init()

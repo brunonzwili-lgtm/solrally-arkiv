@@ -7,7 +7,7 @@ let idbfs_mount = null;
 // Bump whenever the packed assets change: the browser caches the unpacked
 // tarball in IndexedDB under this version, so without a bump a stale copy
 // keeps being reused and asset edits never appear.
-let data_version = 47;
+let data_version = 50;
 
 let start_button = document.getElementById("start_button");
 let status_text = document.getElementById("status_text");
